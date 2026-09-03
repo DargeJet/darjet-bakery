@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bäckerei & Café DarJet | Powered by Darge Jet</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dj: {
+              void: '#0d0d0d',
+              surface: '#1C1C19',
+              surface2: '#242420',
+              accent: '#10BB82',
+              mint: '#6EEAC5',
+              sage: '#6B8F6F',
+              cream: '#F4EAD2',
+              textLight: '#F5F3ED',
+              textMuted: 'rgba(245,243,237,0.65)'
+            }
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            sans: ['"Inter"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #F5F3ED;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-image: 
+        radial-gradient(circle at 15% 0%, rgba(16,187,130,0.12), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(16,187,130,0.08), transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(16,187,130,0.06), transparent 50%);
+      background-attachment: fixed;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-card {
+      background: rgba(28, 28, 25, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(245, 243, 237, 0.09);
+    }
+  </style>
+</head>
+<body class="pb-28 text-dj-textLight">
+
+  <!-- ШАПКА: БРЕНДИНГ DARGE JET + ЛОКАЛЬНЫЙ БРЕНД -->
+  <header class="sticky top-0 z-20 bg-[#0d0d0d]/85 backdrop-blur-md border-b border-white/10 px-4 pt-3.5 pb-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <!-- Мини-бейдж бренда -->
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-dj-accent to-emerald-900 flex items-center justify-center text-white text-lg font-bold shadow-[0_0_15px_rgba(16,187,130,0.3)]">
+          🥐
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-display text-base font-bold text-dj-cream tracking-tight">
+              Bäckerei & Café DarJet
+            </h1>
+          </div>
+          <p class="text-[10px] text-dj-mint uppercase tracking-wider font-semibold">
+            By Darge Jet Automation
+          </p>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-dj-mint bg-[#10BB82]/10 border border-[#10BB82]/30 px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-dj-accent animate-pulse"></span>
+          Geöffnet
+        </span>
+      </div>
+    </div>
+
+    <!-- ТАБЫ: VORBESTELLUNG / TISCH RESERVIEREN -->
+    <div class="grid grid-cols-2 gap-1.5 mt-3 p-1 bg-dj-surface rounded-xl text-xs font-semibold">
+      <button id="tab-menu" onclick="switchTab('menu')" class="py-2 rounded-lg transition-all bg-dj-accent text-[#0B241A] font-bold shadow-[0_0_12px_rgba(16,187,130,0.35)]">
+        🥖 Vorbestellung
+      </button>
+      <button id="tab-table" onclick="switchTab('table')" class="py-2 rounded-lg transition-all text-dj-textMuted hover:text-white">
+        ☕ Tisch reservieren
+      </button>
+    </div>
+  </header>
+
+  <!-- СЕКЦИЯ 1: МЕНЮ ВЫПЕЧКИ И КАФЕ -->
+  <main id="section-menu" class="px-4 mt-3">
+    
+    <!-- Атмосферная плашка сервиса кафе -->
+    <div class="glass-card rounded-2xl p-3.5 mb-3 flex items-center justify-between border-l-2 border-l-dj-accent">
+      <div>
+        <span class="text-[9px] uppercase font-bold tracking-widest text-dj-accent">Café & Boutique Bäckerei</span>
+        <h2 class="text-xs font-bold text-dj-cream mt-0.5">Frühstück & Kaffeespezialitäten</h2>
+        <p class="text-[10px] text-dj-textMuted mt-0.5">Highspeed-WLAN • Ohne Wartezeit abholen ⚡</p>
+      </div>
+      <span class="text-2xl opacity-90">☕</span>
+    </div>
+
+    <!-- Категории меню -->
+    <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+      <button onclick="filterCategory('all')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-dj-accent text-[#0B241A] transition shadow-sm">
+        Alle Positionen
+      </button>
+      <button onclick="filterCategory('brot')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-dj-surface text-dj-textMuted border border-white/5 hover:border-dj-accent/30 transition">
+        🌾 Brot & Brötchen
+      </button>
+      <button onclick="filterCategory('gebaeck')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-dj-surface text-dj-textMuted border border-white/5 hover:border-dj-accent/30 transition">
+        🥐 Feingebäck
+      </button>
+      <button onclick="filterCategory('kaffee')" class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-dj-surface text-dj-textMuted border border-white/5 hover:border-dj-accent/30 transition">
+        ☕ Café & Bio-Drinks
+      </button>
+    </div>
+
+    <!-- Список продуктов -->
+    <div id="product-list" class="grid grid-cols-1 gap-3 mt-3"></div>
+    
+    <!-- Футер агентства Darge Jet -->
+    <footer class="text-center py-6 text-[10px] text-dj-textMuted">
+      Digitale Bestellsysteme • <strong class="text-dj-cream">DARGE JET</strong> Bremen
+    </footer>
+  </main>
+
+  <!-- СЕКЦИЯ 2: БРОНИРОВАНИЕ СТОЛИКОВ -->
+  <section id="section-table" class="hidden px-4 mt-3">
+    <div class="glass-card p-4 rounded-2xl">
+      <h2 class="font-display text-sm font-bold text-dj-cream">Tisch im Café reservieren</h2>
+      <p class="text-[11px] text-dj-textMuted mt-0.5">Garantierter Sitzplatz für Frühstück, Kaffee & Meetings.</p>
+
+      <form id="table-form" class="mt-3.5 space-y-3 text-xs">
+        <div>
+          <label class="block text-dj-textMuted mb-1">Datum</label>
+          <input type="date" id="res-date" class="w-full bg-dj-surface border border-white/10 rounded-xl p-2.5 text-xs text-dj-cream outline-none focus:border-dj-accent" required />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-dj-textMuted mb-1">Uhrzeit</label>
+            <input type="time" id="res-time" value="09:30" class="w-full bg-dj-surface border border-white/10 rounded-xl p-2.5 text-xs text-dj-cream outline-none focus:border-dj-accent" required />
+          </div>
+          <div>
+            <label class="block text-dj-textMuted mb-1">Personen</label>
+            <select id="res-guests" class="w-full bg-dj-surface border border-white/10 rounded-xl p-2.5 text-xs text-dj-cream outline-none focus:border-dj-accent">
+              <option value="1">1 Person</option>
+              <option value="2" selected>2 Personen</option>
+              <option value="3">3 Personen</option>
+              <option value="4">4 Personen</option>
+              <option value="5">5+ Personen</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-dj-textMuted mb-1">Besondere Wünsche</label>
+          <input type="text" id="res-comment" placeholder="z. B. Fensternähe, Steckdose für Laptop" class="w-full bg-dj-surface border border-white/10 rounded-xl p-2.5 text-xs text-dj-cream outline-none focus:border-dj-accent" />
+        </div>
+        <button type="button" onclick="submitReservation()" class="w-full py-3 bg-dj-accent hover:bg-emerald-400 text-[#0B241A] rounded-xl font-bold text-xs shadow-[0_0_15px_rgba(16,187,130,0.3)] active:scale-[0.98] transition mt-2">
+          Reservierung absenden →
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- МОДАЛЬНОЕ ОКНО КОРЗИНЫ -->
+  <div id="cart-modal" class="fixed inset-0 bg-black/70 z-30 hidden backdrop-blur-md flex items-end">
+    <div class="bg-[#171714] border-t border-white/15 w-full rounded-t-3xl max-h-[85vh] flex flex-col p-4 shadow-2xl">
+      <div class="flex justify-between items-center pb-2.5 border-b border-white/10">
+        <div>
+          <h3 class="font-display text-sm font-bold text-dj-cream">Ihre Vorbestellung</h3>
+          <p class="text-[10px] text-dj-mint">Zahlung bei Abholung an der Express-Kasse</p>
+        </div>
+        <button onclick="toggleCart()" class="text-stone-400 hover:text-white text-2xl font-bold p-1 leading-none">&times;</button>
+      </div>
+
+      <!-- Список товаров -->
+      <div id="cart-items" class="overflow-y-auto divide-y divide-white/5 my-2.5 flex-1"></div>
+
+      <!-- Выбор времени -->
+      <div class="bg-dj-surface p-3 rounded-xl border border-white/10 mb-2.5 space-y-1.5 text-xs">
+        <div class="flex items-center justify-between font-bold text-dj-cream">
+          <span>🕒 Wunsch-Abholzeit:</span>
+          <select id="pickup-time" class="bg-black/60 border border-dj-accent/40 rounded-lg px-2 py-1 text-xs text-dj-mint font-semibold outline-none">
+            <option value="07:30">Heute, 07:30 Uhr</option>
+            <option value="08:00">Heute, 08:00 Uhr</option>
+            <option value="08:30" selected>Heute, 08:30 Uhr</option>
+            <option value="09:00">Heute, 09:00 Uhr</option>
+            <option value="12:00">Heute, 12:00 Uhr</option>
+          </select>
+        </div>
+        <div class="text-[10px] text-dj-textMuted">
+          Ihre Bestellung wird frisch vorbereitet und bereitgestellt.
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center py-2 text-xs font-bold text-white border-t border-white/10">
+        <span>Gesamtbetrag (inkl. MwSt):</span>
+        <span id="cart-total-modal" class="text-sm text-dj-mint font-extrabold">0,00 €</span>
+      </div>
+
+      <button id="btn-submit-order" onclick="submitOrder()" class="w-full py-3 bg-dj-accent hover:bg-emerald-400 text-[#0B241A] font-bold rounded-xl shadow-[0_0_15px_rgba(16,187,130,0.35)] transition text-xs flex justify-center items-center gap-1.5">
+        <span>Kostenpflichtig vorbestellen (im Laden zahlen)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Плавающая плашка корзины (для десктопа/обычного браузера) -->
+  <div id="floating-bar" class="fixed bottom-3 inset-x-4 bg-dj-surface border border-white/10 text-white p-3 rounded-2xl shadow-2xl flex items-center justify-between z-10 hidden transition">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 bg-dj-accent text-[#0B241A] rounded-lg flex items-center justify-center font-bold text-xs" id="cart-count-badge">0</div>
+      <div>
+        <div class="text-[10px] text-dj-textMuted">Vorbestellung</div>
+        <div class="text-xs font-bold text-dj-cream" id="cart-total-bar">0,00 €</div>
+      </div>
+    </div>
+    <button onclick="toggleCart()" class="bg-dj-accent text-[#0B241A] font-bold px-3.5 py-1.5 rounded-xl text-xs shadow hover:bg-emerald-400 transition">
+      Warenkorb →
+    </button>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      tg.setHeaderColor('#0d0d0d');
+      tg.setBackgroundColor('#0d0d0d');
+    }
+
+    const products = [
+      {
+        id: 1,
+        cat: 'gebaeck',
+        title: 'Buttercroissant Pur',
+        desc: 'Traditionell getourt mit 100% französischer Butter, extra zart.',
+        price: 2.20,
+        allergens: 'A (Weizen), G (Milch)',
+        badge: 'Bestseller',
+        img: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80'
+      },
+      {
+        id: 2,
+        cat: 'brot',
+        title: 'DarJet Natursauerteigbrot',
+        desc: '24h Teigruhe, kräftige Kruste, 70% Roggen / 30% Weizen.',
+        price: 4.80,
+        allergens: 'A (Roggen, Weizen)',
+        badge: 'Bio-Kruste',
+        img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80'
+      },
+      {
+        id: 3,
+        cat: 'gebaeck',
+        title: 'Zimtschnecke Feingebäck',
+        desc: 'Mit feinstem Ceylon-Zimt und karamellisiertem Rohrzucker.',
+        price: 2.60,
+        allergens: 'A (Weizen), G (Milch)',
+        badge: 'Tagesfrisch',
+        img: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=300&q=80'
+      },
+      {
+        id: 4,
+        cat: 'kaffee',
+        title: 'Flat White / Cappuccino',
+        desc: 'Doppelter Espresso, samtiger Bio-Haferdrink oder Vollmilch.',
+        price: 3.80,
+        allergens: 'G (oder Hafer)',
+        badge: 'Fair Trade',
+        img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=300&q=80'
+      }
+    ];
+
+    let cart = {};
+
+    function renderProducts(items) {
+      const container = document.getElementById('product-list');
+      container.innerHTML = items.map(p => `
+        <div class="glass-card rounded-2xl p-2.5 flex space-x-3 items-center">
+          <img src="${p.img}" alt="${p.title}" class="w-20 h-20 rounded-xl object-cover flex-shrink-0 bg-stone-900 border border-white/5" />
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h3 class="text-xs font-bold text-dj-cream truncate">${p.title}</h3>
+              ${p.badge ? `<span class="text-[9px] font-bold px-1.5 py-0.2 bg-[#10BB82]/15 text-dj-mint border border-dj-accent/30 rounded">${p.badge}</span>` : ''}
+            </div>
+            <p class="text-[10px] text-dj-textMuted line-clamp-2 mt-0.5 leading-tight">${p.desc}</p>
+            <div class="text-[9px] text-stone-500 mt-1">Allergene: ${p.allergens}</div>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-xs font-extrabold text-dj-cream">${p.price.toFixed(2).replace('.', ',')} €</span>
+              <div id="btn-group-${p.id}">
+                ${cart[p.id] ? `
+                  <div class="flex items-center bg-black/60 border border-white/10 rounded-lg px-1.5 py-0.5 space-x-1.5">
+                    <button onclick="updateQty(${p.id}, -1)" class="w-5 h-5 flex items-center justify-center font-bold text-dj-mint">-</button>
+                    <span class="text-xs font-bold text-white">${cart[p.id]}</span>
+                    <button onclick="updateQty(${p.id}, 1)" class="w-5 h-5 flex items-center justify-center font-bold text-dj-mint">+</button>
+                  </div>
+                ` : `
+                  <button onclick="updateQty(${p.id}, 1)" class="px-2.5 py-1 bg-dj-accent hover:bg-emerald-400 text-[#0B241A] rounded-lg text-[11px] font-bold transition active:scale-95">
+                    + Hinzufügen
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateQty(id, delta) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      updateCartUI();
+      renderProducts(products);
+    }
+
+    function updateCartUI() {
+      const count = Object.values(cart).reduce((a, b) => a + b, 0);
+      let total = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const prod = products.find(p => p.id == id);
+        if (prod) total += prod.price * qty;
+      }
+      const totalStr = total.toFixed(2).replace('.', ',') + ' €';
+      const floatingBar = document.getElementById('floating-bar');
+      document.getElementById('cart-count-badge').innerText = count;
+      document.getElementById('cart-total-bar').innerText = totalStr;
+      document.getElementById('cart-total-modal').innerText = totalStr;
+
+      if (tg?.MainButton) {
+        if (count > 0) {
+          tg.MainButton.setText(`BESTELLUNG ANSEHEN (${totalStr})`);
+          tg.MainButton.color = '#10BB82';
+          tg.MainButton.textColor = '#0B241A';
+          tg.MainButton.show();
+          tg.MainButton.onClick(toggleCart);
+          floatingBar.classList.add('hidden');
+        } else {
+          tg.MainButton.hide();
+          floatingBar.classList.add('hidden');
+        }
+      } else {
+        if (count > 0) floatingBar.classList.remove('hidden');
+        else floatingBar.classList.add('hidden');
+      }
+      renderCartList();
+    }
+
+    function renderCartList() {
+      const container = document.getElementById('cart-items');
+      const items = Object.entries(cart);
+      if (items.length === 0) {
+        container.innerHTML = '<div class="text-center py-5 text-dj-textMuted text-xs">Warenkorb ist noch leer.</div>';
+        return;
+      }
+      container.innerHTML = items.map(([id, qty]) => {
+        const prod = products.find(p => p.id == id);
+        return `
+          <div class="py-2 flex items-center justify-between text-xs">
+            <div>
+              <div class="font-bold text-dj-cream">${prod.title}</div>
+              <div class="text-[10px] text-dj-textMuted">${prod.price.toFixed(2).replace('.', ',')} € / Stk.</div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div class="flex items-center bg-black/60 border border-white/10 rounded-lg px-2 py-0.5">
+                <button onclick="updateQty(${prod.id}, -1)" class="font-bold text-dj-mint px-1">-</button>
+                <span class="font-bold text-white px-1.5">${qty}</span>
+                <button onclick="updateQty(${prod.id}, 1)" class="font-bold text-dj-mint px-1">+</button>
+              </div>
+              <span class="font-bold w-12 text-right text-dj-cream">${(prod.price * qty).toFixed(2).replace('.', ',')} €</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCart() {
+      document.getElementById('cart-modal').classList.toggle('hidden');
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-pill').forEach(b => {
+        b.className = 'cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap bg-dj-surface text-dj-textMuted border border-white/5 transition';
+      });
+      event.target.className = 'cat-pill px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-dj-accent text-[#0B241A] transition shadow-sm';
+      if (cat === 'all') renderProducts(products);
+      else renderProducts(products.filter(p => p.cat === cat));
+    }
+
+    function switchTab(tab) {
+      const secMenu = document.getElementById('section-menu');
+      const secTable = document.getElementById('section-table');
+      const tabMenu = document.getElementById('tab-menu');
+      const tabTable = document.getElementById('tab-table');
+
+      if (tab === 'menu') {
+        secMenu.classList.remove('hidden');
+        secTable.classList.add('hidden');
+        tabMenu.className = 'py-2 rounded-lg transition-all bg-dj-accent text-[#0B241A] font-bold shadow-[0_0_12px_rgba(16,187,130,0.35)]';
+        tabTable.className = 'py-2 rounded-lg transition-all text-dj-textMuted hover:text-white';
+      } else {
+        secMenu.classList.add('hidden');
+        secTable.classList.remove('hidden');
+        tabTable.className = 'py-2 rounded-lg transition-all bg-dj-accent text-[#0B241A] font-bold shadow-[0_0_12px_rgba(16,187,130,0.35)]';
+        tabMenu.className = 'py-2 rounded-lg transition-all text-dj-textMuted hover:text-white';
+        if (tg?.MainButton) tg.MainButton.hide();
+        document.getElementById('floating-bar').classList.add('hidden');
+      }
+    }
+
+    function submitOrder() {
+      const pickupTime = document.getElementById('pickup-time').value;
+      const orderPayload = {
+        type: 'vorbestellung',
+        store: 'Bäckerei & Café DarJet',
+        pickupTime: pickupTime,
+        user: tg?.initDataUnsafe?.user || { id: 1, first_name: 'Gast' },
+        items: Object.entries(cart).map(([id, qty]) => ({
+          productId: id,
+          title: products.find(p => p.id == id)?.title,
+          quantity: qty,
+          price: products.find(p => p.id == id)?.price
+        }))
+      };
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      if (tg?.sendData) {
+        tg.sendData(JSON.stringify(orderPayload));
+      } else {
+        alert("Vorbestellung erfolgreich!\nAbholzeit: " + pickupTime);
+        toggleCart();
+        cart = {};
+        updateCartUI();
+      }
+    }
+
+    function submitReservation() {
+      const date = document.getElementById('res-date').value;
+      const time = document.getElementById('res-time').value;
+      const guests = document.getElementById('res-guests').value;
+      const comment = document.getElementById('res-comment').value;
+
+      if (!date) {
+        alert('Bitte ein Datum wählen');
+        return;
+      }
+
+      const resPayload = {
+        type: 'tischreservierung',
+        date, time, guests, comment,
+        user: tg?.initDataUnsafe?.user || { id: 1, first_name: 'Gast' }
+      };
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      if (tg?.sendData) {
+        tg.sendData(JSON.stringify(resPayload));
+      } else {
+        alert(`Tisch reserviert für ${guests} Person(en) am ${date} um ${time} Uhr!`);
+        switchTab('menu');
+      }
+    }
+
+    document.getElementById('res-date').value = new Date().toISOString().split('T')[0];
+    renderProducts(products);
+  </script>
+</body>
+</html>
